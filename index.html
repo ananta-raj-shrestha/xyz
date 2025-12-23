@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Proposal Page</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Baloo 2", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(
+          circle at top left,
+          #ffe8f3 0,
+          #ffd4f0 30%,
+          #f3d5ff 60%,
+          #c8e6ff 100%
+        );
+        overflow: hidden;
+      }
+
+      /* Floating hearts in background */
+      .hearts {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      .heart {
+        position: absolute;
+        animation: floatUp 8s linear infinite;
+        opacity: 0.8;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(100vh) scale(0.7);
+          opacity: 0;
+        }
+
+        15% {
+          opacity: 0.9;
+        }
+
+        100% {
+          transform: translateY(-10vh) scale(1.1);
+          opacity: 0;
+        }
+      }
+
+      .card {
+        position: relative;
+        z-index: 1;
+        width: min(850px, 95vw);
+        padding: 60px 40px 50px;
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 30px 80px rgba(255, 120, 180, 0.28);
+        backdrop-filter: blur(10px);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: clamp(30px, 4vw, 40px);
+        color: #ff579a;
+        margin-bottom: 35px;
+        letter-spacing: 0.03em;
+        text-shadow: 0 3px 10px rgba(255, 87, 154, 0.4);
+      }
+
+      .image-wrapper {
+        width: 260px;
+        height: 260px;
+        margin: 0 auto 35px;
+        border-radius: 26px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+      }
+
+      .image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-wrapper::after {
+        content: "🌹";
+        position: absolute;
+        bottom: 18px;
+        left: 18px;
+        font-size: 34px;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 28px;
+      }
+
+      .btn {
+        border: none;
+        padding: 12px 40px;
+        border-radius: 999px;
+        font-size: 20px;
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+      }
+
+      .btn-yes {
+        background: linear-gradient(135deg, #ff679f, #ff9a76);
+        color: #fff;
+      }
+
+      .btn-no {
+        background: linear-gradient(135deg, #9b9bff, #ff8ef8);
+        color: #fff;
+        position: absolute;
+        bottom: 45px;
+        right: 34%;
+        transform: translateX(50%);
+      }
+
+      .message {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #ff3f83;
+        min-height: 24px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Floating hearts -->
+    <div class="hearts" id="hearts-container"></div>
+
+    <div class="card" id="card">
+      <h1 id="title">Will you be my Madam Jii? 💖</h1>
+
+      <div class="image-wrapper">
+        <img src="images/cat.jpg" alt="Cute Cat with Rose" />
+      </div>
+
+      <div class="buttons">
+        <button class="btn btn-yes" id="yesBtn">Yes 💘</button>
+        <button class="btn btn-no" id="noBtn">No 😜</button>
+      </div>
+
+      <div class="message" id="message"></div>
+    </div>
+
+    <script>
+      /* Floating hearts */
+      const heartsContainer = document.getElementById("hearts-container");
+
+      function createHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = 18 + Math.random() * 10 + "px";
+        heart.style.animationDuration = 6 + Math.random() * 4 + "s";
+        heartsContainer.appendChild(heart);
+        setTimeout(() => heart.remove(), 9000);
+      }
+      setInterval(createHeart, 600);
+
+      /* Get name from URL */
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get("name");
+
+      if (name) {
+        document.getElementById(
+          "title"
+        ).textContent = `Will you be my Madam Jii, ${decodeURIComponent(
+          name
+        )}? 💖`;
+      }
+
+      /* Buttons logic */
+      const noBtn = document.getElementById("noBtn");
+      const yesBtn = document.getElementById("yesBtn");
+      const message = document.getElementById("message");
+      const card = document.getElementById("card");
+
+      yesBtn.addEventListener("click", () => {
+        // pass name to yes.html also
+        window.location.href = name
+          ? `yes.html?name=${encodeURIComponent(name)}`
+          : "yes.html";
+      });
+
+      noBtn.addEventListener("click", () => {
+        const cardRect = card.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+
+        const padding = 40;
+        const maxLeft = cardRect.width - btnRect.width - padding;
+        const maxTop = cardRect.height - btnRect.height - 80;
+
+        noBtn.style.left = padding + Math.random() * maxLeft + "px";
+        noBtn.style.top = padding + Math.random() * maxTop + "px";
+
+        message.textContent = "No no no... bhaag ke bhi bach nhi paogi 😏💗";
+      });
+    </script>
+  </body>
+</html>
